@@ -18,7 +18,7 @@ lxml==4.6.3
 matplotlib==3.4.2
 networkx==2.5.1
 numpy==1.20.3
-opencv-python==4.5.2.52
+opencv-python==4.5.1.48
 packaging==20.9
 Pillow==8.2.0
 progress==1.5
