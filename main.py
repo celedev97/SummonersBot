@@ -82,9 +82,10 @@ def farm_orbs(device):
                 screen = screenshot(device)
 
             print("No more gems, closing achievements")
-            close_button = template_match(device, screen, images.trophy_close_X)
-            click(device, close_button)
-            continue
+            
+            if close_button := template_match(device, screen, images.trophy_close_X):
+                click(device, close_button)
+                continue
 
         if farm_continue := template_match(device, screen, images.farm_continue):
             print("Continue button found!!!")
