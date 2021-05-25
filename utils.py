@@ -7,12 +7,12 @@ import numpy as np
 from typing import Union, List, Optional, Tuple
 
 
-def click(device: uiautomator2.Device, point: Tuple[int, int]):
+def click(device: uiautomator2.Device, point: Tuple[int, int], post_sleep=0.2):
     while not summonerGreedOn(device):
         time.sleep(1)
 
     device.click(point[0], point[1])
-    time.sleep(0.2)
+    time.sleep(post_sleep)
 
 
 def template_match(device, image, template) -> Optional[Tuple[int, int]]:
