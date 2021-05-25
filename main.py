@@ -1,4 +1,5 @@
 import argparse
+import datetime
 import sys
 import logging
 from enum import Enum
@@ -8,6 +9,10 @@ from utils import *
 from optparse import OptionParser
 
 logger = logging.getLogger("SummonerGreed")
+
+SAVE_SUMMON = True
+
+start_time = round(time.time() * 1000)
 
 
 class Summons(Enum):
@@ -36,17 +41,28 @@ def summon(device: uiautomator2.Device, category: Summons = Summons.ORBS_10):
         screen = screenshot(device)
         time.sleep(0.2)
 
-        okay_button = template_match(device, screen, images.okay_summon_template)
-        if okay_button:
-            click(device, okay_button)
-            screen = screenshot(device)
-
         summon_button = template_match(device, screen, summon_template)
         if summon_button:
             summoned += 1
             print(f"Summoning... ({summoned})")
-            click(device, summon_button)
-            click(device, summon_button)
+            click(device, summon_button, 0.1)
+            click(device, summon_button, 0.1)
+
+
+        okay_button = template_match(device, screen, images.okay_summon_template)
+        if okay_button:
+            click(device, okay_button)
+
+            if SAVE_SUMMON:
+                height, width, _ = screen.shape[::]
+                summon = screen[ height // 8 : height // 2, (width // 4) : (width * 3 // 4)]
+
+                cv2.imwrite(f"summons/summon_{start_time}_{summoned}.png", summon)
+
+            screen = screenshot(device)
+
+
+
 
         no_summon_button = template_match(device, screen, no_summon_template)
         if no_summon_button:
