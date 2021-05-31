@@ -25,12 +25,20 @@ class Summons(Enum):
             return images.summon_10_on, images.summon_10_off
         elif self.value == Summons.ORBS_30.value:
             return images.summon_30_on, images.summon_30_off
-        elif self.value == Summons.ORBS_60.value:
+        elif self.value == Summons.GEMS_60.value:
             return images.summon_60_on, images.summon_60_off
+            
+def screenshots(device: uiautomator2.Device):
+    print(f"Screenshots initiated in last.png")
+
+    while True:
+        screen = screenshot(device, True)
+        time.sleep(3)
+       
 
 
 def summon(device: uiautomator2.Device, category: Summons = Summons.ORBS_10):
-    print("Summon initiated")
+    print(f"Summon initiated ({category.name})")
 
     summon_template, no_summon_template = category.get_images()
 
@@ -140,7 +148,10 @@ if __name__ == '__main__':
         if sys.argv.index("-s") != len(sys.argv) - 1:
             # TODO: Try to convert the arg sys.argv.index("-s") to a Summon enum (10/30/60)
             pass
-        summon(android_device)
+        summon(android_device, Summons.ORBS_10)
+        
+    if "-d" in sys.argv:
+        screenshots(android_device)
 
     elif "-f" in sys.argv:
         farm_orbs(android_device)

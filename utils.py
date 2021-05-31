@@ -35,12 +35,13 @@ def template_match(device, image, template) -> Optional[Tuple[int, int]]:
     return None
 
 
-def screenshot(device):
+def screenshot(device, save = False):
     while not summonerGreedOn(device):
         time.sleep(1)
 
     image = device.screenshot(format='opencv')
-    # cv2.imwrite("last.png", image)
+    if save:
+        cv2.imwrite("last.png", image)
     return image
 
 
