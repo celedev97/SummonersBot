@@ -22,7 +22,8 @@ def screenshots_loop(device: uiautomator2.Device):
         time.sleep(3)
 
 
-def summon(device: uiautomator2.Device, category: Summons = Summons.ORBS_10, save_screenshot=False):
+def summon(device: uiautomator2.Device, category: Summons = Summons.ORBS_10,
+           check_achievements=True, save_screenshot=False):
     # creating percentages for the crop based on the orbs number
     start_x, end_x = 0, 0
     if category == Summons.ORBS_10:
@@ -34,7 +35,6 @@ def summon(device: uiautomator2.Device, category: Summons = Summons.ORBS_10, sav
 
     okay_button = None
     summoned = 0
-
 
     print(f"Summon initiated ({category.name})")
 
@@ -69,6 +69,10 @@ def summon(device: uiautomator2.Device, category: Summons = Summons.ORBS_10, sav
 
                 click(device, okay_button, post_sleep=0.1)
 
+            if check_achievements and summoned % 5 == 0:
+                print("checking achievements")
+                exit_summon(device)
+
 
 def farm_orbs(device):
     print("Farm initiated...")
@@ -81,11 +85,19 @@ def farm_orbs(device):
         status = detect_screen(device, screen, react=True)
 
         # if i'm in the summon screen i need to go out
-        if status == Screen.SUMMON and (close_summon := match_trophy_close(screen)):
+        if status == Screen.SUMMON:
             print("Summon screen detected, going back to farm")
-            click(device, close_summon)
+            exit_summon(device, screen)
 
         time.sleep(3)
+
+
+def exit_summon(device, screen=None):
+    if screen is None:
+        screen = screenshot(device)
+
+    if close_summon := match_trophy_close(screen):
+        click(device, close_summon)
 
 
 def detect_screen(device, screen=None, react=False) -> Screen:
