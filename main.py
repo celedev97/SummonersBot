@@ -11,9 +11,6 @@ from utils.match_images import *
 from utils.structs import *
 
 logger = logging.getLogger("SummonerGreed")
-
-SAVE_SUMMON = True
-
 start_time = round(time.time() * 1000)
 
 
@@ -25,7 +22,7 @@ def screenshots_loop(device: uiautomator2.Device):
         time.sleep(3)
 
 
-def summon(device: uiautomator2.Device, category: Summons = Summons.ORBS_10):
+def summon(device: uiautomator2.Device, category: Summons = Summons.ORBS_10, save_screenshot=False):
     # creating percentages for the crop based on the orbs number
     start_x, end_x = 0, 0
     if category == Summons.ORBS_10:
@@ -37,6 +34,9 @@ def summon(device: uiautomator2.Device, category: Summons = Summons.ORBS_10):
 
     okay_button = None
     summoned = 0
+
+
+    print(f"Summon initiated ({category.name})")
 
     while True:
         # taking a screenshot
@@ -50,10 +50,10 @@ def summon(device: uiautomator2.Device, category: Summons = Summons.ORBS_10):
             if summon_button := match_summon_button(utils.last_screenshot, start_x, end_x):
                 summoned += 1
                 print(f"Summoning... ({summoned})")
-                click(device, summon_button)
-                click(device, summon_button)
-                click(device, summon_button)
-                if SAVE_SUMMON or okay_button is None:
+                click(device, summon_button, post_sleep=0.1)
+                click(device, summon_button, post_sleep=0.1)
+
+                if save_screenshot or (okay_button is None):
                     screenshot(device)
             elif match_summon_off_button(utils.last_screenshot, start_x, end_x):
                 print("Can't summon anymore.")
@@ -63,37 +63,11 @@ def summon(device: uiautomator2.Device, category: Summons = Summons.ORBS_10):
                 okay_button = match_summon_okay(utils.last_screenshot)
 
             if okay_button:
-                if SAVE_SUMMON:
+                if save_screenshot:
                     summon_screenshot, _ = percentage_crop(utils.last_screenshot, 20, 80, 10, 50)
                     cv2.imwrite(f"summons/summon_{start_time}_{summoned}.png", summon_screenshot)
 
-                click(device, okay_button)
-
-    print(f"Summon initiated ({category.name})")
-
-    summon_template, no_summon_template = category.get_images()
-
-    no_summon_button = None
-
-    while no_summon_button is None:
-        screen = screenshot(device)
-        time.sleep(0.2)
-
-        summon_button = template_match(screen, summon_template)
-        if summon_button:
-
-            click(device, summon_button, 0.1)
-            click(device, summon_button, 0.1)
-
-        okay_button = template_match(screen, images.okay_summon_template)
-        if okay_button:
-            click(device, okay_button)
-
-            screen = screenshot(device)
-
-        no_summon_button = template_match(screen, no_summon_template)
-        if no_summon_button:
-            print("Can't summon anymore.")
+                click(device, okay_button, post_sleep=0.1)
 
 
 def farm_orbs(device):
