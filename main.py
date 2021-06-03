@@ -155,7 +155,15 @@ def detect_screen(device, screen=None, react=False) -> Screen:
     if match_summon(screen):
         return Screen.SUMMON
 
-    if okay_summon := match_summon_okay(screen):
+    # the continue button must be checked before the summon_okay
+    # since the summon_okay can get matched on the continue grass
+    if farm_continue := match_level_continue(screen):
+        if react:
+            print("Continue button found!!!")
+            click(device, farm_continue)
+            return detect_screen(device, None, True)
+        return Screen.LEVEL_WON
+    elif okay_summon := match_summon_okay(screen):
         if react:
             click(device, okay_summon)
             return detect_screen(device, None, True)
@@ -174,14 +182,7 @@ def detect_screen(device, screen=None, react=False) -> Screen:
             return detect_screen(device, None, True)
         return Screen.STUCK_SHOP_POWERUP
 
-    # region last case: the level is ending
-    if farm_continue := match_level_continue(screen):
-        if react:
-            print("Continue button found!!!")
-            click(device, farm_continue)
-            return detect_screen(device, None, True)
-        return Screen.LEVEL_WON
-
+    # region last case: less probable events
     if edit_confirm := match_level_formation_confirm(screen):
         if react:
             print("Confirmed formation.")
