@@ -17,16 +17,12 @@ def _try_load(filename):
 # SUMMON
 
 go_to_summon = _try_load("go_to_summon.png")
-
-summon_10_on = _try_load("summon_10_on.png")
-summon_30_on = _try_load("summon_30_on.png")
-summon_60_on = _try_load("summon_60_on.png")
-
-summon_10_off = _try_load("summon_10_off.png")
-summon_30_off = _try_load("summon_30_off.png")
-summon_60_off = _try_load("summon_60_off.png")
+summon_screen = _try_load("summon_screen.png")
 
 okay_summon_template = _try_load("okay_summon.png")
+
+summon_on_button = _try_load("summon_on_button.png")
+summon_off_button = _try_load("summon_off_button.png")
 
 # FARM
 
