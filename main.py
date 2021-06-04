@@ -1,5 +1,7 @@
 import sys
 import logging
+from typing import List
+
 import uiautomator2
 import time
 
@@ -229,8 +231,15 @@ if __name__ == '__main__':
     if "-s" in sys.argv:
         if sys.argv.index("-s") != len(sys.argv) - 1:
             # TODO: Try to convert the arg sys.argv.index("-s") to a Summon enum (10/30/60)
-            pass
-        summon(android_device, Summons.ORBS_10)
+            after_s = sys.argv[sys.argv.index("-s") + 1]
+            summon_categories: List[Summons] = list(Summons)
+            selected_category = Summons.ORBS_10
+
+            for category in summon_categories:
+                if category.name == after_s:
+                    selected_category = category
+
+        summon(android_device, selected_category)
 
     if "-ss" in sys.argv:
         screenshots_loop(android_device)
