@@ -15,7 +15,7 @@ def match_trophy_window(screen):
 
 def match_trophy_close(screen):
     crop, offset = percentage_crop(screen, 80, 100, 0, 15)
-    return template_match(crop, imaduges.trophy_close_X, offset)
+    return template_match(crop, images.trophy_close_X, offset)
 
 
 def match_trophy_gem(screen):
