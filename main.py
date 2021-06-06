@@ -95,6 +95,8 @@ def farm_orbs(device):
 
 
 def exit_summon(device, screen=None):
+    print("Summon screen:", detect_screen(device, react=True) == Screen.SUMMON)
+
     if screen is None:
         screen = screenshot(device)
 
