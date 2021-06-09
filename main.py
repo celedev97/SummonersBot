@@ -54,6 +54,7 @@ def summon(device: uiautomator2.Device, category: Summons = Summons.ORBS_10,
                 print(f"Summoning... ({summoned})")
                 click(device, summon_button, post_sleep=0.1)
                 click(device, summon_button, post_sleep=0.1)
+                click(device, summon_button, post_sleep=0)
 
                 if save_screenshot or (okay_button is None):
                     screenshot(device)
