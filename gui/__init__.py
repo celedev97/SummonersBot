@@ -75,7 +75,13 @@ class MainWindow:
         self.farm_button.grid(row=2, column=1, sticky=tkinter.NSEW)
 
         root.columnconfigure(0, minsize=239)
+        
+        root.protocol("WM_DELETE_WINDOW", self.close)
         root.mainloop()
+        
+    def close(self):
+        self.root.destroy()
+        exit(0)
 
     def summon_button_pressed(self):
         def summon_thread_function():
@@ -98,6 +104,7 @@ class MainWindow:
             self.buttons_status(farm=True, summon=True)
 
         self.tasks.append(task := threading.Thread(target=summon_thread_function))
+        task.daemon = True
         task.start()
 
     def farm_button_pressed(self):
@@ -124,6 +131,7 @@ class MainWindow:
             self.buttons_status(farm=True, summon=True)
 
         self.tasks.append(task := threading.Thread(target=farm_thread_function))
+        task.daemon = True
         task.start()
 
     def buttons_status(self, summon: bool = None, farm: bool = None):
