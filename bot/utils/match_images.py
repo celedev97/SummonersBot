@@ -1,4 +1,4 @@
-import images
+from bot import images
 from bot.utils import percentage_crop, template_match
 
 
@@ -105,12 +105,12 @@ def level_formation_confirm(screen):
 
 # region stuck in menus
 def edit_exit(screen):
-    # TODO: complete
-    return None
+    crop, offset = percentage_crop(screen, 80, 100, 80, 100)
+    return template_match(crop, images.edit_close_X, offset)
 
 
 def shop_exit(screen):
-    # TODO: complete
-    return None
+    crop, offset = percentage_crop(screen, 0, 20, 80, 100)
+    return template_match(crop, images.edit_close_X, offset)
 
 # endregion

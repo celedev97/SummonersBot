@@ -211,19 +211,6 @@ class Bot:
                 return self.detect_screen(react=True)
             return Screen.SUMMON_OKAY
 
-        # if we're not even in summon then maybe we're stuck in monster edit or shop as a bug
-        if edit_exit := match.edit_exit(screen):
-            if react:
-                self._click(edit_exit)
-                return self.detect_screen(react=True)
-            return Screen.STUCK_FORMATION_EDIT
-
-        if shop_exit := match.shop_exit(screen):
-            if react:
-                self._click(shop_exit)
-                return self.detect_screen(react=True)
-            return Screen.STUCK_SHOP_POWERUP
-
         # region last case: less probable events
         if edit_confirm := match.level_formation_confirm(screen):
             if react:
@@ -247,4 +234,19 @@ class Bot:
                 return self.detect_screen(react=True)
             return Screen.LEVEL_SELECT
         # endregion
+
+        # if we're not in any known place maybe we're stuck in shop or edit mode
+        if edit_exit := match.edit_exit(screen):
+            if react:
+                self._click(edit_exit)
+                return self.detect_screen(react=True)
+            return Screen.STUCK_FORMATION_EDIT
+
+        if shop_exit := match.shop_exit(screen):
+            if react:
+                self._click(shop_exit)
+                return self.detect_screen(react=True)
+            return Screen.STUCK_SHOP_POWERUP
+
+
     # endregion
