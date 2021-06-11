@@ -19,7 +19,6 @@ if __name__ == '__main__':
     if "-s" in sys.argv:
         selected_category = Summons.ORBS_10
         if sys.argv.index("-s") != len(sys.argv) - 1:
-            # TODO: Try to convert the arg sys.argv.index("-s") to a Summon enum (10/30/60)
             after_s = sys.argv[sys.argv.index("-s") + 1]
             summon_categories: List[Summons] = list(Summons)
 
