@@ -60,6 +60,10 @@ class Bot:
         if close_summon := match.trophy_close(screen):
             self._click(close_summon)
 
+        screen = self._screenshot()
+        if close_edit := match.edit_exit(screen):
+            self._click(close_edit)
+
     # endregion
 
     # region debug functions
