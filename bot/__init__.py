@@ -70,7 +70,7 @@ class Bot:
     # endregion
 
     # region bot functions
-    def farm_orbs(self):
+    def farm_orbs(self, level=Levels.JOINT_REVENGE, variant=LevelVariants.HARD):
         print("Farm initiated...")
 
         while True:

@@ -10,6 +10,12 @@ if __name__ == '__main__':
     bot = Bot(None)
 
     # parsing arguments
+    if len(sys.argv) == 1:
+        # GUI MODE
+        import gui
+        gui.MainWindow()
+        exit(0)
+
     if "-s" in sys.argv:
         selected_category = Summons.ORBS_10
         if sys.argv.index("-s") != len(sys.argv) - 1:
