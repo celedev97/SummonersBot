@@ -6,15 +6,15 @@ from bot import Bot, Summons
 # Press the green button in the gutter to run the script.
 
 if __name__ == '__main__':
-    # initializing uiautomator2
-    bot = Bot(None)
-
     # parsing arguments
     if len(sys.argv) == 1:
         # GUI MODE
         import gui
         gui.MainWindow()
         exit(0)
+
+    # initializing uiautomator2
+    bot = Bot(None)
 
     if "-s" in sys.argv:
         selected_category = Summons.ORBS_10

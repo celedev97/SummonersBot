@@ -10,6 +10,19 @@ class MainWindow:
     selected_summon: tkinter.Variable
     selected_level: tkinter.Variable
 
+    summon_button: tkinter.Button
+    farm_button: tkinter.Button
+
+    tasks: List[threading.Thread] = []
+
+    # bot property (singleton)
+    _bot: Bot = None
+
+    def bot(self) -> Bot:
+        if self._bot is None:
+            self._bot = Bot()
+        return self._bot
+
     def __init__(self):
         self.root = root = tkinter.Tk()
         root.title("SummonersBot")
@@ -17,13 +30,22 @@ class MainWindow:
         self.selected_summon = tkinter.Variable(root, Summons.ORBS_10.value)
         self.selected_level = tkinter.Variable(root, (Levels.JOINT_REVENGE.value, LevelVariants.HARD.value))
 
+        # region ADB options
+        adb_options = tkinter.LabelFrame(root, text="ADB")
+
+        tkinter.Label(adb_options, text="Serial or IP (Leave blank if not needed):").grid(row=0, column=0)
+        tkinter.Entry(adb_options, ).grid(row=2, column=0, sticky=tkinter.NSEW)
+
+        adb_options.grid(row=0, column=0, columnspan=2, sticky=tkinter.NSEW)
+        # endregion
+
         # region Summon options
         summon_options = tkinter.LabelFrame(root, text="Summon")
         for index, summon in enumerate(list(Summons)):
             summon: Summons
             tkinter.Radiobutton(summon_options, variable=self.selected_summon,
                                 text=summon.name.replace("_", " "), value=summon.value).grid(row=index, column=0)
-        summon_options.grid(row=0, column=0, sticky=tkinter.NSEW)
+        summon_options.grid(row=1, column=0, sticky=tkinter.NSEW)
         # endregion
 
         # region Farm Options
@@ -43,32 +65,70 @@ class MainWindow:
                                     ).grid(row=y_index + 1, column=x_index)
 
             y_index += 2
-        farm_options.grid(row=0, column=1, sticky=tkinter.NSEW)
+        farm_options.grid(row=1, column=1, sticky=tkinter.NSEW)
         # endregion
 
-        tkinter.Button(root, text="Summon", command=self.summon_button_pressed
-                       ).grid(row=1, column=0, sticky=tkinter.NSEW)
-        tkinter.Button(root, text="Farm", command=self.farm_button_pressed
-                       ).grid(row=1, column=1, sticky=tkinter.NSEW)
+        self.summon_button = tkinter.Button(root, text="Summon", command=self.summon_button_pressed)
+        self.summon_button.grid(row=2, column=0, sticky=tkinter.NSEW)
+
+        self.farm_button = tkinter.Button(root, text="Farm", command=self.farm_button_pressed)
+        self.farm_button.grid(row=2, column=1, sticky=tkinter.NSEW)
 
         root.columnconfigure(0, minsize=239)
         root.mainloop()
 
-
-    _bot: Bot = None
-
-    def bot(self) -> Bot:
-        if self._bot is None:
-            self._bot = Bot()
-        return self._bot
-
     def summon_button_pressed(self):
-        selected_summon = filter(lambda x: x.value == self.selected_summon.get(), Summons).__next__()
-        threading.Thread(target=lambda: self.bot().summon(selected_summon)).start()
+        def summon_thread_function():
+            # preparing data
+            selected_summon = filter(lambda x: x.value == self.selected_summon.get(), Summons).__next__()
+
+            # turning off buttons
+            self.buttons_status(summon=False)
+
+            # wait for the last task started to finish if necessary
+            if len(self.tasks) > 1:
+                self.tasks[-2].join()
+                # turning off buttons again (the join might have activated them)
+                self.buttons_status(summon=False)
+
+            # starting the task
+            self.bot().summon(selected_summon)
+
+            # turning on buttons
+            self.buttons_status(farm=True, summon=True)
+
+        self.tasks.append(task := threading.Thread(target=summon_thread_function))
+        task.start()
 
     def farm_button_pressed(self):
-        level_value, variant_value = self.selected_level.get()
-        selected_level = filter(lambda x: x.value == level_value, Levels).__next__()
-        selected_variant = filter(lambda x: x.value == variant_value, LevelVariants).__next__()
+        def farm_thread_function():
+            # preparing data
+            level_value, variant_value = self.selected_level.get()
+            selected_level = filter(lambda x: x.value == level_value, Levels).__next__()
+            selected_variant = filter(lambda x: x.value == variant_value, LevelVariants).__next__()
 
-        self.bot().farm_orbs(selected_level, selected_variant)
+            # turning off buttons
+            self.buttons_status(farm=False, summon=False)
+
+            # wait for the last task started to finish if necessary
+            if len(self.tasks) > 1:
+                self.tasks[-2].join()
+                # turning off buttons again (the join might have activated them)
+                self.buttons_status(farm=False, summon=False)
+
+
+            # starting the task
+            self.bot().farm_orbs(selected_level, selected_variant)
+
+            # turning on buttons
+            self.buttons_status(farm=True, summon=True)
+
+        self.tasks.append(task := threading.Thread(target=farm_thread_function))
+        task.start()
+
+    def buttons_status(self, summon: bool = None, farm: bool = None):
+        if summon is not None:
+            self.summon_button.config(state="normal" if summon else "disabled")
+
+        if farm is not None:
+            self.farm_button.config(state="normal" if farm else "disabled")
