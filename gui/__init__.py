@@ -13,6 +13,8 @@ class MainWindow:
     summon_button: tkinter.Button
     farm_button: tkinter.Button
 
+    device_id: tkinter.StringVar
+
     tasks: List[threading.Thread] = []
 
     # bot property (singleton)
@@ -20,7 +22,8 @@ class MainWindow:
 
     def bot(self) -> Bot:
         if self._bot is None:
-            self._bot = Bot()
+            device_id = self.device_id.get()
+            self._bot = Bot(None if device_id == "" else device_id)
         return self._bot
 
     def __init__(self):
@@ -29,12 +32,13 @@ class MainWindow:
 
         self.selected_summon = tkinter.Variable(root, Summons.ORBS_10.value)
         self.selected_level = tkinter.Variable(root, (Levels.JOINT_REVENGE.value, LevelVariants.HARD.value))
+        self.device_id = tkinter.StringVar(root, "")
 
         # region ADB options
         adb_options = tkinter.LabelFrame(root, text="ADB")
 
         tkinter.Label(adb_options, text="Serial or IP (Leave blank if not needed):").grid(row=0, column=0)
-        tkinter.Entry(adb_options, ).grid(row=2, column=0, sticky=tkinter.NSEW)
+        tkinter.Entry(adb_options, textvariable=self.device_id).grid(row=2, column=0, sticky=tkinter.NSEW)
 
         adb_options.grid(row=0, column=0, columnspan=2, sticky=tkinter.NSEW)
         # endregion

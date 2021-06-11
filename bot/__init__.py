@@ -20,6 +20,9 @@ class Bot:
     start_time: int
 
     def __init__(self, serial=None):
+        if serial is not None:
+            print(adbutils.adb.connect(serial))
+
         device = adbutils.adb.device(serial)
         initer = uiautomator2.Initer(device)
         if not initer.check_install():
