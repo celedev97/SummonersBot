@@ -79,10 +79,10 @@ class MainWindow:
         self.farm_button.grid(row=2, column=1, sticky=tkinter.NSEW)
 
         root.columnconfigure(0, minsize=239)
-        
+
         root.protocol("WM_DELETE_WINDOW", self.close)
         root.mainloop()
-        
+
     def close(self):
         self.root.destroy()
         exit(0)
@@ -102,7 +102,10 @@ class MainWindow:
                 self.buttons_status(summon=False)
 
             # starting the task
-            self.bot().summon(selected_summon)
+            try:
+                self.bot().summon(selected_summon)
+            except Exception as ex:
+                print(f"ERROR: {ex}")
 
             # turning on buttons
             self.buttons_status(farm=True, summon=True)
@@ -127,9 +130,11 @@ class MainWindow:
                 # turning off buttons again (the join might have activated them)
                 self.buttons_status(farm=False, summon=False)
 
-
             # starting the task
-            self.bot().farm_orbs(selected_level, selected_variant)
+            try:
+                self.bot().farm_orbs(selected_level, selected_variant)
+            except Exception as ex:
+                print(f"ERROR: {ex}")
 
             # turning on buttons
             self.buttons_status(farm=True, summon=True)
