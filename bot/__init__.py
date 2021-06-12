@@ -148,7 +148,7 @@ class Bot:
     # region general bot behaviour
     def detect_screen(self, screen=None, react=False) -> Screen:
         if screen is None:
-            screen = self._screenshot("last")
+            screen = self._screenshot()
 
         # region trophies stuff
         if trophy_button := match.trophy_exclamation(screen):
@@ -251,6 +251,5 @@ class Bot:
                 self._click(shop_exit)
                 return self.detect_screen(react=True)
             return Screen.STUCK_SHOP_POWERUP
-
 
     # endregion
