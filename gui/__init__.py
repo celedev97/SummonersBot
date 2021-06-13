@@ -17,17 +17,13 @@ class MainWindow:
 
     tasks: List[threading.Thread] = []
 
-    # bot property (singleton)
-    _bot: Bot = None
-
     def bot(self) -> Bot:
-        if self._bot is None:
-            device_id = self.device_id.get()
-            self._bot = Bot(None if device_id == "" else device_id)
-        return self._bot
+        device_id = self.device_id.get()
+        return Bot(None if device_id == "" else device_id)
 
     def __init__(self):
         self.root = root = tkinter.Tk()
+        # root.minsize(550, 600)
         root.title("SummonersBot")
 
         self.selected_summon = tkinter.Variable(root, Summons.ORBS_10.value)
@@ -40,16 +36,17 @@ class MainWindow:
         tkinter.Label(adb_options, text="Serial or IP (Leave blank if not needed):").grid(row=0, column=0)
         tkinter.Entry(adb_options, textvariable=self.device_id).grid(row=2, column=0, sticky=tkinter.NSEW)
 
-        adb_options.grid(row=0, column=0, columnspan=2, sticky=tkinter.NSEW)
+        adb_options.grid(row=0, column=0, columnspan=2, sticky=tkinter.NSEW, padx=10, pady=10)
         # endregion
 
+        # region Bot option
         # region Summon options
         summon_options = tkinter.LabelFrame(root, text="Summon")
         for index, summon in enumerate(list(Summons)):
             summon: Summons
             tkinter.Radiobutton(summon_options, variable=self.selected_summon,
                                 text=summon.name.replace("_", " "), value=summon.value).grid(row=index, column=0)
-        summon_options.grid(row=1, column=0, sticky=tkinter.NSEW)
+        summon_options.grid(row=1, column=0, sticky=tkinter.NSEW, padx=10)
         # endregion
 
         # region Farm Options
@@ -69,16 +66,35 @@ class MainWindow:
                                     ).grid(row=y_index + 1, column=x_index)
 
             y_index += 2
-        farm_options.grid(row=1, column=1, sticky=tkinter.NSEW)
+        farm_options.grid(row=1, column=1, sticky=tkinter.NSEW, padx=10)
+        # endregion
         # endregion
 
-        self.summon_button = tkinter.Button(root, text="Summon", command=self.summon_button_pressed)
-        self.summon_button.grid(row=2, column=0, sticky=tkinter.NSEW)
+        # region Bot start buttons
+        button_row = tkinter.Frame(root)
 
-        self.farm_button = tkinter.Button(root, text="Farm", command=self.farm_button_pressed)
-        self.farm_button.grid(row=2, column=1, sticky=tkinter.NSEW)
+        button_row.grid(row=2, column=0, sticky=tkinter.NSEW, padx=10, pady=10, columnspan=2)
 
-        root.columnconfigure(0, minsize=239)
+        self.summon_button = tkinter.Button(button_row, text="Summon", command=self.summon_button_pressed)
+        self.summon_button.grid(row=0, column=0, sticky=tkinter.NSEW)
+
+        self.farm_button = tkinter.Button(button_row, text="Farm", command=self.farm_button_pressed)
+        self.farm_button.grid(row=0, column=1, sticky=tkinter.NSEW)
+
+        button_row.columnconfigure(0, weight=1, uniform="group1")
+        button_row.columnconfigure(1, weight=1, uniform="group1")
+        # endregion
+
+        # region Queue visualization
+
+        # endregion
+
+        # region Console output
+
+        # endregion
+
+        root.columnconfigure(0, weight=1, uniform="group1")
+        root.columnconfigure(1, weight=1, uniform="group1")
 
         root.protocol("WM_DELETE_WINDOW", self.close)
         root.mainloop()
