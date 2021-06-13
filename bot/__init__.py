@@ -119,8 +119,8 @@ class Bot:
                 if summon_button := match.summon_button(self.last_screenshot, start_x, end_x):
                     summoned += 1
                     print(f"Summoning... ({summoned})")
-                    self._click(summon_button, post_sleep=0.1)
-                    self._click(summon_button, post_sleep=0.1)
+                    self._click(summon_button, post_sleep=0)
+                    self._click(summon_button, post_sleep=0)
                     self._click(summon_button, post_sleep=0)
 
                     if save_screenshot or (okay_button is None):
